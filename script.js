@@ -1,5 +1,5 @@
 // ⚠️ 여기에 Apps Script 배포 URL을 반드시 붙여넣으세요!
-const API_URL = "https://script.google.com/macros/s/AKfycbycwt2AHc-rriBSXII.../exec"; // 예시 URL
+const API_URL = "https://script.google.com/macros/s/AKfycbwt2AhC-rriBSXllRbn3zMcq4N3ZtJ5ZOwMG_m1cyo47GQYKBdRS7NZTWBEFTY2j_UO/exec"; // 예시 URL
 
 let allData = []; // 모든 데이터를 저장할 전역 변수
 
