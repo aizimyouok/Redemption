@@ -91,13 +91,14 @@ header h1 {
     transition: width 0.5s ease-in-out;
 }
 
-
 /* --- 4. 데이터 영역 (개인별 카드) --- */
 #controls {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
 }
 
 #search-input {
@@ -106,6 +107,12 @@ header h1 {
     border: 1px solid var(--border-color);
     border-radius: 8px;
     font-size: 16px;
+    transition: box-shadow 0.2s;
+}
+
+#search-input:focus {
+    outline: none;
+    box-shadow: 0 0 0 3px rgba(74, 144, 226, 0.3);
 }
 
 .btn-primary {
@@ -124,7 +131,6 @@ header h1 {
     background-color: #357ABD;
 }
 
-
 #data-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
@@ -139,6 +145,11 @@ header h1 {
     display: flex;
     flex-direction: column;
     gap: 15px;
+    transition: box-shadow 0.2s ease-in-out;
+}
+
+.data-card:hover {
+    box-shadow: 0 8px 16px var(--shadow-color);
 }
 
 .data-card-header {
@@ -158,6 +169,7 @@ header h1 {
     font-size: 12px;
     font-weight: 700;
     color: white;
+    text-transform: uppercase;
 }
 
 .status-badge.completed {
@@ -168,18 +180,28 @@ header h1 {
     background-color: #17a2b8; /* 진행중: 청록색 */
 }
 
+.status-badge.on-hold {
+    background-color: #ffc107; /* 보류: 노란색 */
+    color: #333;
+}
+
 .data-card-body p {
     font-size: 16px;
     color: var(--text-color-light);
     display: flex;
     justify-content: space-between;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 10px;
+}
+
+.data-card-body p:last-child {
+    border-bottom: none;
 }
 
 .data-card-body p span:last-child {
     font-weight: 500;
     color: var(--text-color);
 }
-
 
 /* --- 5. 반응형 디자인 --- */
 @media (max-width: 768px) {
@@ -195,7 +217,7 @@ header h1 {
 
     #controls {
         flex-direction: column;
-        gap: 15px;
+        align-items: stretch;
     }
     
     #search-input {
