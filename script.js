@@ -1,5 +1,4 @@
-// ⚠️ 여기에 Apps Script 배포 URL을 반드시 붙여넣으세요!
-const API_URL = "https://script.google.com/macros/s/AKfycbykFLX24cpvcxfzzQvAbH-OEFFuImpMdXxFM4srMXEmb3PAFL-KBbjOwPgY8VbXNSjx/exec"; // 예시 URL
+// API_URL 변수는 index.html에서 먼저 불러온 config.js 파일에서 가져옵니다.
 
 let allData = []; // 모든 데이터를 저장할 전역 변수
 
@@ -34,9 +33,9 @@ async function fetchData() {
         const result = await response.json();
 
         if (result.status === 'success') {
-            allData = result.data; // 받아온 데이터를 전역 변수에 저장
+            allData = result.data;
             displayDashboard(allData);
-            displayData(allData); // 전체 데이터로 화면 표시
+            displayData(allData);
         } else {
             handleError("데이터 로딩 실패: " + result.message);
         }
@@ -51,12 +50,13 @@ async function fetchData() {
  */
 function displayDashboard(data) {
     const dashboard = document.getElementById('dashboard');
-    // '총환수액', '상환액' 등은 실제 구글 시트의 헤더 이름과 정확히 일치해야 합니다.
-    const totalAmount = data.reduce((sum, row) => sum + (Number(row['총환수액']) || 0), 0);
-    const repaidAmount = data.reduce((sum, row) => sum + (Number(row['상환액']) || 0), 0);
+    
+    // 키 이름을 시트에 맞게 '환수원금', '상환중인금액', '상환상태'로 변경
+    const totalAmount = data.reduce((sum, row) => sum + (Number(row['환수원금']) || 0), 0);
+    const repaidAmount = data.reduce((sum, row) => sum + (Number(row['상환중인금액']) || 0), 0);
     const remainingAmount = totalAmount - repaidAmount;
     const progress = totalAmount > 0 ? ((repaidAmount / totalAmount) * 100) : 0;
-    const completedCount = data.filter(row => row['상태'] === '완료').length;
+    const completedCount = data.filter(row => row['상환상태'] === '완료').length;
 
     dashboard.innerHTML = `
         <div class="kpi-card">
@@ -87,7 +87,7 @@ function displayDashboard(data) {
  */
 function displayData(data) {
     const container = document.getElementById('data-container');
-    container.innerHTML = ''; // 기존 카드들을 비웁니다.
+    container.innerHTML = '';
 
     if (data.length === 0) {
         container.innerHTML = '<p>표시할 데이터가 없습니다.</p>';
@@ -98,26 +98,26 @@ function displayData(data) {
         const card = document.createElement('div');
         card.className = 'data-card';
         
-        // 상태에 따라 뱃지 스타일 변경 (시트의 '상태' 컬럼 값 기준)
+        // '상환상태'에 따라 뱃지 스타일 변경
         let statusBadge = '';
-        if (item['상태'] === '완료') {
-            statusBadge = '<span class="status-badge completed">Completed</span>';
-        } else if (item['상태'] === '진행중') {
-            statusBadge = '<span class="status-badge in-progress">In Progress</span>';
-        } else if (item['상태'] === '보류') {
-            statusBadge = '<span class="status-badge on-hold">On Hold</span>';
+        if (item['상환상태'] === '완료') {
+            statusBadge = '<span class="status-badge completed">완료</span>';
+        } else if (item['상환상태'] === '상환중') {
+            statusBadge = '<span class="status-badge in-progress">상환중</span>';
+        } else if (item['상환상태']) { // 기타 상태가 있을 경우
+            statusBadge = `<span class="status-badge on-hold">${item['상환상태']}</span>`;
         }
 
+        // 키 이름을 스크린샷에 맞게 변경 ('연번', '환수원금' 등)
         card.innerHTML = `
             <div class="data-card-header">
-                <h3>${item['이름']}</h3>
+                <h3>${item['연번']}</h3>
                 ${statusBadge}
             </div>
             <div class="data-card-body">
-                <p><span>부서</span> <span>${item['부서']}</span></p>
-                <p><span>총 환수액</span> <span>₩${Number(item['총환수액']).toLocaleString()}</span></p>
-                <p><span>상환액</span> <span>₩${Number(item['상환액']).toLocaleString()}</span></p>
-                <p><span>잔액</span> <span>₩${(Number(item['총환수액']) - Number(item['상환액'])).toLocaleString()}</span></p>
+                <p><span>총 환수액</span> <span>₩${Number(item['환수원금']).toLocaleString()}</span></p>
+                <p><span>상환액</span> <span>₩${Number(item['상환중인금액']).toLocaleString()}</span></p>
+                <p><span>잔액</span> <span>₩${Number(item['상환잔액']).toLocaleString()}</span></p>
             </div>
         `;
         container.appendChild(card);
@@ -130,10 +130,10 @@ function displayData(data) {
 function filterData() {
     const searchTerm = document.getElementById('search-input').value.toLowerCase();
     const filteredData = allData.filter(item => {
-        // '이름'은 실제 시트의 헤더 이름과 일치해야 합니다.
-        return item['이름'].toLowerCase().includes(searchTerm);
+        // '연번' 컬럼을 기준으로 검색
+        return item['연번'].toLowerCase().includes(searchTerm);
     });
-    displayData(filteredData); // 필터링된 데이터로 화면 다시 그리기
+    displayData(filteredData);
 }
 
 /**
