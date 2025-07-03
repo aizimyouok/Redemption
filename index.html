@@ -3,14 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>환수 관리 대시보드</title>
-    <link rel="stylesheet" href="style.css"> 
+    <title>Clearance - 환수 관리 대시보드</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    
     <div id="app">
-        <h1>환수 관리 대시보드</h1>
-        <div id="dashboard"></div>
-        <div id="data-container"></div>
+        <header>
+            <h1>Clearance Dashboard</h1>
+        </header>
+
+        <main>
+            <section id="dashboard">
+                </section>
+
+            <section id="controls">
+                <input type="text" id="search-input" placeholder="이름으로 검색...">
+                <button class="btn-primary" id="add-new-btn">+ 신규 등록</button>
+            </section>
+            
+            <section id="data-container">
+                </section>
+        </main>
     </div>
 
     <script src="script.js"></script>
